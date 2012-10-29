@@ -1,11 +1,16 @@
 request = require("request")
 fs = require("fs")
+async = require("async")
+path = require("path")
 
+outputDir = "output"
+outputPath = path.join(__dirname, "output")
 
 grabVideo = (videoUrl, fileName, cb) ->
     console.log "Grabbing video file from #{videoUrl}"
-    console.log(fileName)
-    request(videoUrl).pipe(fs.createWriteStream(fileName))
+    request(videoUrl, =>
+        cb()
+    ).pipe(fs.createWriteStream(path.join(outputPath, fileName)))
 
 
 grabLecture = (lectureUrl, fileName, cb) ->
@@ -18,8 +23,7 @@ grabLecture = (lectureUrl, fileName, cb) ->
         if !videoUrlMatches? then throw new Error "Could not find a single video. Are you sure you provided the right URL?"
         if videoUrlMatches.length<2 then throw new Error "Could not find a single video match. Are you sure you provided the right URL?"
         videoUrl = videoUrlMatches[1]
-        grabVideo videoUrl, fileName
-        cb()
+        grabVideo videoUrl, fileName, cb
 
 
 grabCourse = (courseUrl, cb) ->
@@ -29,13 +33,17 @@ grabCourse = (courseUrl, cb) ->
         body = body.toString()
         lectureUrlMatch = ///"(https://class.coursera.org/algo/lecture/preview_view\?lecture_id=\d+)"///ig
         fileIndex = 0
+        grabLectureTasks = []
         while (lectureUrlMatches = lectureUrlMatch.exec(body))?
-            if fileIndex==1 then break
             if lectureUrlMatches.length<2 then throw new Error "Could not find a single lecture match. Are you sure you provided the right URL (#{courseUrl})?"
             lectureUrl = lectureUrlMatches[1]
-            grabLecture lectureUrl, "vid#{fileIndex++}.mp4", =>
+            fileIndex++
+            do (lectureUrl, fileIndex) =>
+                grabLectureTasks.push (done) =>
+                    grabLecture lectureUrl, "vid#{fileIndex}.mp4", done
         if fileIndex == 0 then throw new Error "Could not find a single lecture. Are you sure you provided the right URL (#{courseUrl})?"
-        cb()
+        async.series grabLectureTasks, =>
+            cb()
 
 
 courseUrl = """https://class.coursera.org/algo/lecture/preview/index"""
