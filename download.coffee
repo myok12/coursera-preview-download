@@ -47,4 +47,8 @@ grabCourse = (courseUrl, cb) ->
 
 
 courseUrl = """https://class.coursera.org/algo/lecture/preview/index"""
-grabCourse(courseUrl, =>)
+fs.exists outputPath, (exists) =>
+    if exists then throw new Error "Output folder #{outputPath} already exists. Please remove it manually and rerun me."
+    fs.mkdir outputPath, =>
+        grabCourse courseUrl, =>
+            console.log "Done download course. Enjoy."
