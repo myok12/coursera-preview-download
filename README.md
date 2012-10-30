@@ -9,7 +9,7 @@ Installation
 
 Make sure you have installed [node.js][] 0.8.XX.
 
-1. grab the [code][] by running `git clone https://github.com/myok12/coursera-preview-download`
+1. grab the [code][] by running `git clone https://github.com/myok12/coursera-preview-download.git`
 1. run `npm install` to install third-party dependencies
 
 Usage
@@ -22,5 +22,5 @@ If you don't have one, google for
 1. If you import into iTunes, make sure you select all videos -> Right Click -> Get Info to
    specify that the files are an iTunes U set to have them play in the right order.
 
-  [code]: https://github.com/myok12/coursera-preview-download
+  [code]: https://github.com/myok12/coursera-preview-download.git
   [node.js]: http://nodejs.org/download/
