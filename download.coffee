@@ -8,9 +8,14 @@ outputPath = path.join(__dirname, "output")
 
 grabVideo = (videoUrl, fileNamePrefix, cb, i, total) ->
     # https://d19vezwu8eufl6.cloudfront.net/algo1/recoded_videos%2F5.1%20djikstra-intro%20%5B6143299e%5D%20.mp4
-    descMatches = /recoded_videos\/(.+)\s+\[.+\]\s+\.mp4/.exec(unescape(videoUrl))
+    # \s*(?:\[.+\])\s*
+    descMatches = /recoded_videos\/(.+)\.mp4/.exec(unescape(videoUrl))
     if !descMatches? or descMatches.length<2 then throw new Error "Could not find a video desc. Are you sure you provided the right URL (#{videoUrl})?"
-    fileName = "#{fileNamePrefix}_#{descMatches[1]}.mp4"
+    fileDesc = descMatches[1]
+    fileDesc = fileDesc.replace(/\s*\[.+\]\s*/, "")
+    fileDesc = fileDesc.trim()
+
+    fileName = "#{fileNamePrefix}_#{fileDesc}.mp4"
     console.log "Grabbing video file #{i} of #{total} from #{videoUrl}"
     request(videoUrl, ->
         cb()
@@ -67,6 +72,7 @@ readCourseUrl = (cb) ->
 
     process.stdin.on 'data', (chunk) ->
         cb chunk.toString()
+        process.stdin.pause()
 
 fs.exists outputPath, (exists) ->
     if exists then throw new Error "Output folder #{outputPath} already exists. Please remove it manually and rerun me."
