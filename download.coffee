@@ -6,18 +6,18 @@ path = require("path")
 outputDir = "output"
 outputPath = path.join(__dirname, "output")
 
-grabVideo = (videoUrl, fileNamePrefix, cb) ->
+grabVideo = (videoUrl, fileNamePrefix, cb, i, total) ->
     # https://d19vezwu8eufl6.cloudfront.net/algo1/recoded_videos%2F5.1%20djikstra-intro%20%5B6143299e%5D%20.mp4
     descMatches = /recoded_videos\/(.+)\s+\[.+\]\s+\.mp4/.exec(unescape(videoUrl))
     if !descMatches? or descMatches.length<2 then throw new Error "Could not find a video desc. Are you sure you provided the right URL (#{videoUrl})?"
     fileName = "#{fileNamePrefix}_#{descMatches[1]}.mp4"
-    console.log "Grabbing video file from #{videoUrl}"
+    console.log "Grabbing video file #{i} of #{total} from #{videoUrl}"
     request(videoUrl, ->
         cb()
     ).pipe(fs.createWriteStream(path.join(outputPath, fileName)))
 
 
-grabLecture = (lectureUrl, fileName, cb) ->
+grabLecture = (lectureUrl, fileName, cb, i, total) ->
     console.log "Grabbing lecture from #{lectureUrl}"
     request lectureUrl, (err, res, body) ->
         if err? or res.statusCode!=200 then throw new Error "Could not retreive lecture from #{lectureUrl}"
@@ -26,7 +26,7 @@ grabLecture = (lectureUrl, fileName, cb) ->
         videoUrlMatches = videoUrlMatch.exec(body)
         if !videoUrlMatches? or videoUrlMatches.length<2 then throw new Error "Could not find a single video. Are you sure you provided the right URL?"
         videoUrl = videoUrlMatches[1]
-        grabVideo videoUrl, fileName, cb
+        grabVideo videoUrl, fileName, cb, i, total
 
 
 grabCourse = (courseUrl, cb) ->
@@ -40,14 +40,16 @@ grabCourse = (courseUrl, cb) ->
         body = body.toString()
         lectureUrlMatch = ///"(https://class.coursera.org/algo/lecture/preview_view\?lecture_id=\d+)"///ig
         fileIndex = 0
+        files = 0
         grabLectureTasks = []
         while (lectureUrlMatches = lectureUrlMatch.exec(body))?
             if lectureUrlMatches.length<2 then throw new Error "Could not find a single lecture match. Are you sure you provided the right URL (#{courseUrl})?"
             lectureUrl = lectureUrlMatches[1]
             fileIndex++
+            files++
             do (lectureUrl, fileIndex) ->
                 grabLectureTasks.push (done) ->
-                    grabLecture lectureUrl, "#{courseName}_#{fileIndex}", done
+                    grabLecture lectureUrl, "#{courseName}_#{fileIndex}", done, fileIndex, files
         if fileIndex == 0 then throw new Error "Could not find a single lecture. Are you sure you provided the right URL (#{courseUrl})?"
         async.series grabLectureTasks, ->
             cb()
