@@ -1,0 +1,19 @@
+{
+  "name": "grab-coursera-course-previews",
+  "version": "0.0.1",
+  "description": "Allows you to grab all preview videos of a course from coursera",
+  "main": "download.coffee",
+  "dependencies": {
+    "async": "~0.1.22",
+    "request": "~2.11.4",
+    "coffee-script: "1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/coffee/bin/coffee download"
+  },
+  "repository": "",
+  "author": "Ohad Kravchick",
+  "license": "BSD"
+}
