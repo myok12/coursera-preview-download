@@ -6,7 +6,7 @@
   "dependencies": {
     "async": "~0.1.22",
     "request": "~2.11.4",
-    "coffee-script: "1.4.0"
+    "coffee-script": "1.4.0"
   },
   "devDependencies": {},
   "scripts": {
