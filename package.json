@@ -11,7 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node_modules/coffee/bin/coffee download"
+    "start": "node_modules/coffee-script/bin/coffee download"
   },
   "repository": "",
   "author": "Ohad Kravchick",
