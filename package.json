@@ -1,8 +1,7 @@
 {
-  "name": "grab-coursera-course-previews",
+  "name": "coursera-preview-download",
   "version": "0.0.1",
-  "description": "Allows you to grab all preview videos of a course from coursera",
-  "main": "download.coffee",
+  "description": "Allows you to grab all preview videos of a course from coursera.org",
   "dependencies": {
     "async": "~0.1.22",
     "request": "~2.11.4",
@@ -10,10 +9,10 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node_modules/coffee-script/bin/coffee download"
   },
-  "repository": "",
-  "author": "Ohad Kravchick",
-  "license": "BSD"
+  "keywords": ["coursera", "videos", "itunesu", "lectures", "download", "mp4"],
+  "repository": "https://github.com/myok12/coursera-preview-download",
+  "author": "Ohad Kravchick <myok12@yahoo.com>",
+  "url": "https://github.com/myok12"
 }

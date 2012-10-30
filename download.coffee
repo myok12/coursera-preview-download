@@ -16,10 +16,18 @@ grabVideo = (videoUrl, fileNamePrefix, cb, i, total) ->
     fileDesc = fileDesc.trim()
 
     fileName = "#{fileNamePrefix}_#{fileDesc}.mp4"
-    console.log "Grabbing video file #{i} of #{total} from #{videoUrl}"
-    request(videoUrl, ->
-        cb()
-    ).pipe(fs.createWriteStream(path.join(outputPath, fileName)))
+
+    requestFile = ->
+        console.log "Grabbing video file #{i} of #{total} from #{videoUrl}"
+        request(videoUrl, ->
+            cb()
+        ).pipe(fs.createWriteStream(path.join(outputPath, fileName)))
+    fs.exists outputPath, (exists) ->
+        if exists
+            requestFile()
+        else
+            fs.mkdir outputPath, ->
+                requestFile()
 
 
 grabLecture = (lectureUrl, fileName, cb, i, total) ->
@@ -45,7 +53,7 @@ grabCourse = (courseUrl, cb) ->
     request courseUrl, (err, res, body) ->
         if err? or res.statusCode!=200 then throw new Error "Could not retreive course preview index from #{courseUrl}"
         body = body.toString()
-        lectureUrlMatch = ///"(https://class.coursera.org/algo/lecture/preview_view\?lecture_id=\d+)"///ig
+        lectureUrlMatch = ///"(https://class.coursera.org/.+/lecture/preview_view\?lecture_id=\d+)"///ig
         fileIndex = 0
         files = 0
         grabLectureTasks = []
@@ -77,6 +85,5 @@ readCourseUrl = (cb) ->
 fs.exists outputPath, (exists) ->
     if exists then throw new Error "Output folder #{outputPath} already exists. Please remove it manually and rerun me."
     readCourseUrl (courseUrl) ->
-        fs.mkdir outputPath, ->
-            grabCourse courseUrl, ->
-                console.log "Done downloading course. Enjoy."
+        grabCourse courseUrl, ->
+            console.log "Done downloading course. Enjoy."
