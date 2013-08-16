@@ -36,8 +36,8 @@ grabLecture = (lectureUrl, fileName, cb, i, total) ->
     request lectureUrl, (err, res, body) ->
         if err? or res.statusCode!=200 then throw new Error "Could not retreive lecture from #{lectureUrl}"
         body = body.toString()
-        videoUrlMatch = /<source type=\"video\/mp4\" src=\"([a-zA-Z0-9-\._~:\/\?\[\]%@!$&\(\)\*\+,;=]+)\"><\/source>/ig
-        # <source type="video/mp4" src="https://d19vezwu8eufl6.cloudfront.net/algo1/recoded_videos%2F5.9%20hash-guts-1%20%5B389ce042%5D%20.mp4"></source>
+        videoUrlMatch = /<source type=\"video\/mp4\" src=\"([a-zA-Z0-9-\._~:\/\?\[\]%@!$&\(\)\*\+,;=]+)\">/ig
+        # <source type="video/mp4" src="https://d19vezwu8eufl6.cloudfront.net/algo1/recoded_videos%2F5.9%20hash-guts-1%20%5B389ce042%5D%20.mp4">
         videoUrlMatches = videoUrlMatch.exec(body)
         if !videoUrlMatches? or videoUrlMatches.length<2 then throw new Error "Could not find a single video. Are you sure you provided the right URL?"
         videoUrl = videoUrlMatches[1]
